@@ -5,18 +5,15 @@ const bcrypt = require('bcrypt');
 exports.register = async (req, res) => {
   const { email, user, password } = req.body;
 
-  // Check if user exists by email
-  const checkUser = USERS.find((user) => email === user.email);
+  const checkUser = USERS.find((user) => email === user.email); // Check if user exists by email
 
-  // If user exists, send appropriate response
   if (checkUser) {
-    return res.status(409).send('user already exists');
+    return res.status(409).send('user already exists'); // If user exists, send appropriate response
   }
   //Create user
   try {
-    //Encrypt password
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(password, salt); //Encrypt password
 
     //Store in "DB"
     USERS.push({ email, name: user, password: hashedPassword, isAdmin: false });
