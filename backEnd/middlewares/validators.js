@@ -8,14 +8,17 @@ exports.validateTokenMiddleware = (req, res, next) => {
   if (!authorization || !accessToken) {
     return res.status(401).send('Access Token Required'); //No access token
   }
-
-  //Verify token
-  jwt.verify(accessToken, ACCESS_TOKEN_SECRET, (err, user) => {
-    if (err) {
-      return res.status(403).send('Invalid Access Token');
-    } else {
-      req.user = user;
-      next();
-    }
-  });
+  try {
+    //Verify token
+    jwt.verify(accessToken, ACCESS_TOKEN_SECRET, (err, user) => {
+      if (err) {
+        return res.status(403).send('Invalid Access Token');
+      } else {
+        req.user = user;
+        next();
+      }
+    });
+  } catch (error) {
+    throw { status: error.status, message: error.message };
+  }
 };

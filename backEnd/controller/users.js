@@ -99,18 +99,22 @@ exports.renewAccessToken = (req, res) => {
   if (!user) {
     return res.status(403).send('Invalid Refresh Token'); //Invalid - doesn't exists in DB
   } else {
-    //Validate token
-    jwt.verify(token, REFRESH_TOKEN_SECRET, (err, user) => {
-      if (err) {
-        return res.status(403).send('Invalid Refresh Token'); //Invalid - doesn't valid by jwt
-      } else {
-        //Generate tokens
-        const userData = { email: user.email, name: user.name, isAdmin: user.isAdmin };
-        const accessToken = jwt.sign(userData, ACCESS_TOKEN_SECRET, {
-          expiresIn: '10s',
-        });
-        res.status(200).send({ accessToken });
-      }
-    });
+    try {
+      //Validate token
+      jwt.verify(token, REFRESH_TOKEN_SECRET, (err, user) => {
+        if (err) {
+          return res.status(403).send('Invalid Refresh Token'); //Invalid - doesn't valid by jwt
+        } else {
+          //Generate tokens
+          const userData = { email: user.email, name: user.name, isAdmin: user.isAdmin };
+          const accessToken = jwt.sign(userData, ACCESS_TOKEN_SECRET, {
+            expiresIn: '10s',
+          });
+          res.status(200).send({ accessToken });
+        }
+      });
+    } catch (error) {
+      throw { status: error.status, message: error.message };
+    }
   }
 };
