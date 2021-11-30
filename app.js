@@ -12,7 +12,7 @@ app.use(express.json());
 
 /***** ROUTERS *****/
 app.use('/users', userRouter); //users router
-app.use('/api', apiRouter); //api router
+app.use('/api/v1', apiRouter); //api router
 
 // app.use(express.static(`./client/build`));
 // app.get('/', (req, res) => {
