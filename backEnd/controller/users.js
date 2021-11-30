@@ -81,3 +81,22 @@ exports.logout = (req, res) => {
   REFRESHTOKENS.splice(refTokenIndex, 1); //Delete refresh token from DB
   return res.status(200).send('User Logged Out Successfully');
 };
+
+/********** TOKEN VALIDATION **********/
+exports.tokenValidation = (req, res) => {
+  const { authorization } = req.headers;
+  console.log(req.headers.authorization);
+  const accessToken = authorization.split(' ')[1]; //Split from word "Bearer"
+  if (!authorization || !accessToken) {
+    return res.status(401).send('Access Token Required'); //No access token
+  }
+
+  //Verify token
+  jwt.verify(accessToken, ACCESS_TOKEN_SECRET, (err, user) => {
+    if (err) {
+      return res.status(403).send('Invalid Access Token');
+    } else {
+      return res.status(200).send({ valid: true });
+    }
+  });
+};
