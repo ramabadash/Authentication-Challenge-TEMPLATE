@@ -3,6 +3,8 @@ const { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } = require('../../env.js');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
+/**********  LOG-REG REQUESTS ***********/
+
 // users/register - signUp
 exports.register = async (req, res) => {
   const { email, name, password } = req.body;
@@ -61,4 +63,21 @@ exports.login = async (req, res) => {
   } catch (error) {
     throw { status: error.status, message: error.message };
   }
+};
+
+// logout session
+exports.logout = (req, res) => {
+  const { token } = req.body;
+
+  if (!token) {
+    return res.status(400).send('Refresh Token Required');
+  }
+
+  const refTokenIndex = REFRESHTOKENS.indexOf(token);
+  if (refTokenIndex === -1) {
+    //Not found
+    return res.status(400).send('Invalid Refresh Token');
+  }
+  REFRESHTOKENS.splice(refTokenIndex, 1); //Delete refresh token from DB
+  return res.status(200).send('User Logged Out Successfully');
 };
