@@ -3,20 +3,16 @@ const express = require('express');
 const app = express();
 const userRouter = require('./backEnd/routers/usersRouter.js');
 const apiRouter = require('./backEnd/routers/apiRouter.js');
-
-// const cors = require('cors');
+const { getUserOptions } = require('./backEnd/controller/options.js');
 
 /***** MIDDLEWARE *****/
-// app.use(cors({ origin: '*' }));
 app.use(express.json());
 
 /***** ROUTERS *****/
 app.use('/users', userRouter); //users router
 app.use('/api/v1', apiRouter); //api router
 
-// app.use(express.static(`./client/build`));
-// app.get('/', (req, res) => {
-//   res.sendFile(__dirname + '/client/build/index.html');
-// });
+//Returns an array of all APIs and endpoints. (sends only the available options for the current logged user permissions)
+app.options('/', getUserOptions);
 
 module.exports = app;
