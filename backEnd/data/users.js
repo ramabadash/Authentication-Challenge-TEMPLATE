@@ -5,7 +5,7 @@ const USERS = [
   {
     email: 'admin@email.com',
     name: 'admin',
-    password: '$2b$10$kdXzMfLXkURVha/oO0stTOJO1k8cxuJnrfPao3nvIN.tsfHdEKyEy!',
+    password: '$2b$10$kdXzMfLXkURVha/oO0stTOJO1k8cxuJnrfPao3nvIN.tsfHdEKyEy',
     isAdmin: true,
   },
 ];

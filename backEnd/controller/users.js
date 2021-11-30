@@ -1,10 +1,11 @@
-const { USERS, INFORMATION } = require('../data/users.js');
+const { USERS, INFORMATION, REFRESHTOKENS } = require('../data/users.js');
+const { ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET } = require('../../env.js');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 // users/register - signUp
 exports.register = async (req, res) => {
-  const { email, user, password } = req.body;
-
+  const { email, name, password } = req.body;
   const checkUser = USERS.find((user) => email === user.email); // Check if user exists by email
 
   if (checkUser) {
@@ -16,13 +17,47 @@ exports.register = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt); //Encrypt password
 
     //Store in "DB"
-    USERS.push({ email, name: user, password: hashedPassword, isAdmin: false });
+    USERS.push({ email, name, password: hashedPassword, isAdmin: false });
     INFORMATION.push({
       email,
-      info: `${user} info`,
+      info: `${name} info`,
     });
 
     return res.status(201).send('Register Success');
+  } catch (error) {
+    throw { status: error.status, message: error.message };
+  }
+};
+
+// Login
+exports.login = async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const checkUser = USERS.find((user) => email === user.email); // Check if user exists by email
+
+    if (!checkUser) {
+      return res.status(404).send('cannot find user'); // If user doesn't exists, send appropriate response
+    }
+    //Verify username and password
+    const isPassword = await bcrypt.compare(password, checkUser.password);
+
+    if (!isPassword) {
+      return res.status(403).send('User or Password incorrect'); //Wrong details
+    } else {
+      //Generate tokens
+      const userData = { email: checkUser.email, name: checkUser.name, isAdmin: checkUser.isAdmin };
+      const refreshToken = jwt.sign(userData, REFRESH_TOKEN_SECRET);
+      const accessToken = jwt.sign(userData, ACCESS_TOKEN_SECRET, {
+        expiresIn: '10s',
+      });
+      REFRESHTOKENS.push(refreshToken);
+
+      return res.status(200).send({
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+        ...userData,
+      });
+    }
   } catch (error) {
     throw { status: error.status, message: error.message };
   }
