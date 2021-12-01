@@ -89,12 +89,12 @@ exports.tokenValidation = (req, res) => res.status(200).send({ valid: true });
 exports.renewAccessToken = (req, res) => {
   const { token } = req.body;
 
-  if (!token || !token) {
+  if (!token) {
     return res.status(401).send('Refresh Token Required'); //No refresh token
   }
 
   //Verify token
-  const user = REFRESHTOKENS.find((token) => token === token);
+  const user = REFRESHTOKENS.find((refToken) => refToken === token);
 
   if (!user) {
     return res.status(403).send('Invalid Refresh Token'); //Invalid - doesn't exists in DB
